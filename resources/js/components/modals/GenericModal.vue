@@ -23,9 +23,9 @@
         </Dialog>
     </TransitionRoot>
 </template>
-  
+
 <script setup>
-import { ref } from 'vue'
+import { ref } from 'vue';
 import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
 
 const open = ref(true)

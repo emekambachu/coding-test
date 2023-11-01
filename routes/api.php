@@ -17,8 +17,13 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
 Route::middleware('auth:sanctum')->get('/tasks', [App\Http\Controllers\TaskController::class, 'index']);
 Route::middleware('auth:sanctum')->post('/tasks', [App\Http\Controllers\TaskController::class, 'store']);
 Route::middleware('auth:sanctum')->delete('/tasks/{task}', [App\Http\Controllers\TaskController::class, 'destroy']);
+
+Route::middleware('auth:sanctum')->get('/task', [App\Http\Controllers\TaskController::class, 'show']);
+Route::middleware('auth:sanctum')->get('/task/update', [App\Http\Controllers\TaskController::class, 'update']);
+
 Route::middleware('auth:sanctum')->get('/users', [App\Http\Controllers\TaskController::class, 'users']);
 Route::middleware('auth:sanctum')->get('/phases/{phase}', [App\Http\Controllers\PhaseController::class, 'show']);
