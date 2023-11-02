@@ -11,9 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('phases', function (Blueprint $table) {
+        Schema::create('phases', static function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->tinyInteger('is_completion')->default(0);
             $table->timestamps();
         });
     }
