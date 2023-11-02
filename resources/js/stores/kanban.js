@@ -7,6 +7,7 @@ export const useKanbanStore = defineStore('kanban', {
         selectedTask: null,
         phases: [],
         users: [],
+        errors: [],
         creatingTask: false,
 
         creatingTaskProps: {

@@ -27,3 +27,5 @@ Route::middleware('auth:sanctum')->put('/task/update', [App\Http\Controllers\Tas
 
 Route::middleware('auth:sanctum')->get('/users', [App\Http\Controllers\TaskController::class, 'users']);
 Route::middleware('auth:sanctum')->get('/phases/{phase}', [App\Http\Controllers\PhaseController::class, 'show']);
+Route::middleware('auth:sanctum')->put('/phases/update', [App\Http\Controllers\PhaseController::class, 'update']);
+Route::middleware('auth:sanctum')->delete('/phases/delete', [App\Http\Controllers\PhaseController::class, 'destroy']);
