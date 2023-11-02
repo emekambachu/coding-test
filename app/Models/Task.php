@@ -16,13 +16,13 @@ class Task extends Model
 
     use HasFactory;
 
-    function user()
+    function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    function phase()
+    function phase(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->belongsTo(Phase::class);
+        return $this->belongsTo(Phase::class, 'phase_id', 'id');
     }
 }

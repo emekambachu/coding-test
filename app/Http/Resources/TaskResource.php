@@ -12,16 +12,14 @@ class TaskResource extends JsonResource
      *
      * @return array<string, mixed>
      */
-    public function toArray(Request $request): array
+    public function toArray($request): array
     {
         return [
             'id' => $this->id,
             'name' => $this->name,
             'user_id' => $this->user_id,
             'phase_id' => $this->phase_id,
-            // Relationships
-            'user' => $this->user ? new UserResource($this->user) : '',
-            'phase' => $this->phase ? new PhaseResource($this->phase) : '',
+            'user' => $this->user ?: '',
         ];
     }
 }

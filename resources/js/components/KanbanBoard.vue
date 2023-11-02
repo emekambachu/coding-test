@@ -94,11 +94,11 @@
 
         <!-- Modal to View the selected card -->
         <Teleport to="body">
-            <generic-modal v-if="kanban.hasSelectedTask()" @close="kanban.unselectTask()">
+            <generic-modal v-if="kanban.hasSelectedTask()" @close="closeModal()">
 
                 <div v-if="!editTask" class="relative">
                     <TrashIcon class="w-6 h-6 absolute top-0 right-0 hover:cursor-pointer" @click="deleteCard(kanban.selectedTask.id)" />
-                    <PencilSquareIcon class="w-6 h-6 absolute top-0 right-0 hover:cursor-pointer" @click="toggleEditTask(kanban.selectedTask.id)" />
+                    <PencilSquareIcon class="w-6 h-6 absolute top-0 hover:cursor-pointer" @click="toggleEditTask()" />
 
                     <div class="flex justify-center">
                         <img class="w-16 h-16 shadow-lg rounded-full border-2 border-blue-800"
@@ -118,9 +118,10 @@
                 </div>
 
                 <div v-else>
-                    <EyeIcon class="w-6 h-6 absolute top-0 right-0 hover:cursor-pointer" @click="editTask = false" />
                     <div>
                         <div class="mt-3 sm:mt-2">
+                            <EyeIcon class="w-6 h-6 absolute top-0 right-0 hover:cursor-pointer" @click="editTask = false" />
+
                             <DialogTitle as="h3" class="mb-6 text-base font-semibold leading-6 text-gray-900">
                                 Edit task
                             </DialogTitle>
@@ -144,10 +145,10 @@
                                     <ListboxButton
                                         class="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 sm:text-sm sm:leading-6">
                                         <span class="flex items-center">
-                                            <img :src="getAvatar(kanban.users[kanban.creatingTaskProps.user_id || kanban.self.id])"
+                                            <img :src="getAvatar(updateForm.user)"
                                                  alt="" class="h-5 w-5 flex-shrink-0 rounded-full" />
                                             <span class="ml-3 block truncate">
-                                                {{ kanban.users[kanban.creatingTaskProps.user_id || kanban.self.id].name }}
+                                                {{ updateForm.user.name }}
                                             </span>
                                         </span>
                                         <span
@@ -166,7 +167,8 @@
                                                     <div class="flex items-center">
                                                         <img :src="getAvatar(person)" alt="{{ person.name }}"
                                                              class="h-5 w-5 flex-shrink-0 rounded-full" />
-                                                        <span :class="[selected ? 'font-semibold' : 'font-normal', 'ml-3 block truncate']">{{ person.name }}</span>
+                                                        <span :class="[selected ? 'font-semibold' : 'font-normal', 'ml-3 block truncate']">
+                                                            {{ person.name }}</span>
                                                     </div>
 
                                                     <span v-if="selected"
@@ -190,8 +192,8 @@
 
                         <div class="mt-5 sm:mt-6">
                             <button type="button"
-                                    class="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-                                    @click="addCard()">Add the card!</button>
+                                    class="inline-flex w-full justify-center rounded-md bg-amber-400 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400"
+                                    @click="updateTask(kanban.selectedTask.id)">Update Card</button>
                         </div>
                     </div>
                 </div>
@@ -199,7 +201,7 @@
                 <div class="mt-5 sm:mt-6">
                     <button type="button"
                         class="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-                        @click="kanban.unselectTask()">Close</button>
+                        @click="closeModal()">Close</button>
                 </div>
             </generic-modal>
         </Teleport>
@@ -223,6 +225,7 @@ const updateForm = reactive({
     name: "",
     user_id: "",
     phase_id: "",
+    user: ""
 });
 
 const getAvatar = function (user) {
@@ -341,43 +344,35 @@ const addCard = async () => {
     }
 }
 
-const toggleEditTask = async (id) => {
+const toggleEditTask = async () => {
     editTask.value = true;
-    getTaskById(id);
+
+    console.log("selected Task", kanban.selectedTask);
+
+    updateForm.name = kanban.selectedTask.name;
+    updateForm.user_id = kanban.selectedTask.user_id;
+    updateForm.phase_id = kanban.selectedTask.phase_id;
+    updateForm.user = kanban.selectedTask.user;
 }
 
-const getTaskById = (id) => {
-    axios.get('/api/task', {
+const closeModal = () => {
+    kanban.unselectTask();
+    editTask.value = false;
+}
+
+const updateTask = (id) => {
+    axios.post('/api/task/update', updateForm, {
         params: {
             id: id
         }
     }).then((response) => {
         if(response.data.success === true){
-            Object.keys(updateForm).forEach(function(key){
-                console.log(key); // key
-                console.log(updateForm[key]); // value
-                updateForm[key] = response.data.task[key];
-            });
-        }else{
-            console.log(response.data.errors);
-        }
-    }).catch((error) => {
-        console.log(error);
-    });
-}
-
-const updateTask = () => {
-    axios.post('/api/task/update', updateForm)
-        .then((response) => {
-        if(response.data.success === true){
-            // Emitting updated question to parent component
-            emit("emitting-updated-question", response.data.question);
+            console.log(response.data);
             errors.value = [];
         }else{
             errors.value = response.data.errors;
             console.log(response.data.errors);
         }
-
     }).catch((error) => {
         console.log(error);
     });

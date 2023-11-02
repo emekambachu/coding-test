@@ -7,7 +7,7 @@ use App\Http\Requests\UpdateTaskRequest;
 use App\Http\Resources\TaskResource;
 use App\Models\Task;
 use App\Services\TaskService;
-use http\Env\Request;
+use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
@@ -64,13 +64,13 @@ class TaskController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Request $request)
+    public function show(Request $request): \Illuminate\Http\JsonResponse
     {
         try {
-            $data = $this->task->taskById($request->id);
+            $data = $this->task->task()->with('user')->findOrFail($request->id);
             return response()->json([
                 'success' => true,
-                'task' => TaskResource::collection($data),
+                'task' => new TaskResource($data),
             ]);
 
         }catch (\Throwable $th) {
