@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('phase_id')->constrained('phases')->cascadeOnDelete();
+            $table->dateTime('completed_at');
             $table->timestamps();
         });
     }

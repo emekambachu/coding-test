@@ -5,6 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Task;
+<<<<<<< HEAD
+=======
+use App\Services\TaskService;
+use Illuminate\Http\Request;
+>>>>>>> dev
 
 class TaskController extends Controller
 {
@@ -50,10 +55,21 @@ class TaskController extends Controller
     /**
      * Display the specified resource.
      */
+<<<<<<< HEAD
     public function show(Task $task)
     {
         //
     }
+=======
+    public function show(Request $request): \Illuminate\Http\JsonResponse
+    {
+        try {
+            $data = $this->task->task()->with('user')->findOrFail($request->id);
+            return response()->json([
+                'success' => true,
+                'task' => new TaskResource($data),
+            ]);
+>>>>>>> dev
 
     /**
      * Show the form for editing the specified resource.
