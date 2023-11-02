@@ -2,9 +2,7 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Exceptions\HttpResponseException;
 
 class StoreTaskRequest extends FormRequest
 {
@@ -24,30 +22,9 @@ class StoreTaskRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255', 'unique:tasks,name'],
+            'name' => ['required', 'string', 'max:255'],
             'phase_id' => ['required', 'integer', 'exists:phases,id'],
             'user_id' => ['required', 'integer', 'exists:users,id'],
         ];
-    }
-
-    public function messages(): array
-    {
-        return [
-            'name.required' => 'The name field is required.',
-            'name.unique' => 'The name has already been taken.',
-            'user_id.required' => 'The user field is required.',
-            'phase_id.required' => 'The phase field is required.',
-            'user_id.exists' => 'The user does not exist.',
-            'phase_id.exists' => 'The phase does not exist.',
-        ];
-    }
-
-    protected function failedValidation(Validator $validator)
-    {
-        $message = $validator->errors()->all();
-        throw new HttpResponseException(response()->json([
-            'success' => false,
-            'errors' => $message
-        ]));
     }
 }

@@ -20,8 +20,7 @@ class PhaseSeeder extends Seeder
                 ['name' => 'To Do'],
                 ['name' => 'Doing'],
                 ['name' => 'Done'],
-                ['name' => 'Archived'],
-            )
+                ['name' => 'Archived'],)
             ->create();
     }
 }
