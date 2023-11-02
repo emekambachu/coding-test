@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Phase;
+use Illuminate\Support\Facades\DB;
 
 class PhaseService
 {
@@ -21,6 +22,15 @@ class PhaseService
 
     public function deletePhase($request): void
     {
-        $this->phaseById($request->id)->delete();
+        $phase = $this->phase()->with('tasks')->findOrFail($request->id);
+
+        DB::transaction(static function() use($phase)
+        {
+            $phase->tasks()->each(function($task) {
+                $task->delete();
+            });
+        });
+
+        $phase->delete();
     }
 }
